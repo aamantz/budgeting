@@ -1,7 +1,7 @@
 <template>
 	<div class="container-fluid">
-		<budget-tabs :budget_id="budget_id"/>
-		<budget-list :budget_id="budget_id"/>
+		<budget-tabs :budgetId="budgetId"/>
+		<budget-list :budgetId="budgetId"/>
 	</div>
 </template>
 
@@ -19,17 +19,16 @@
 		}
 	})
 	export default class Budgets extends Vue {
-		private budget_id: string;
+		private budgetId: string;
 
 		constructor() {
 			super();
 
-			this.budget_id = "";
+			this.budgetId = "";
 		}
 
-		created() {
-			console.log(this);
-			this.budget_id = this.$route.params.budget_id;
+		private created() {
+			this.budgetId = this.$route.params.budget_id;
 		}
 	}
 </script>

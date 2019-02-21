@@ -1,9 +1,13 @@
 import * as jwt from "jsonwebtoken";
-import config from "../Config/Database";
+import * as dotenv from 'dotenv';
+
+// Setup ENV from .env
+dotenv.config();
 
 interface ITokenClaims {
   iat?: string;
   exp?: string;
+  jti?: string;
   name: string;
   userId: string;
 }
@@ -50,10 +54,12 @@ class JWT {
 
     delete payload.iat;
     delete payload.exp;
+    delete payload.jti;
 
     // The first signing converted all needed options into claims, they are already in the payload
     return this.sign(payload, refreshOptions);
   }
 }
 
-export default new JWT(config.secret);
+// @ts-ignore
+export default new JWT(process.env.JWT_SECRET);

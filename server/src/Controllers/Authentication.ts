@@ -46,7 +46,8 @@ class Authentication {
             if (isMatch && !err) {
               // if user is found and password is right create a token
               const token = JWT.sign(user.toJSON(), {
-                expiresIn: 60 * 1
+                  // @ts-ignore
+                expiresIn: parseInt( process.env.JWT_EXP, 0 )
               });
               // return the information including token as JSON
               res.json({ success: true, token: "Bearer " + token });
@@ -89,7 +90,8 @@ class Authentication {
     token = req.headers.authorization.split(" ")[1];
 
     const newToken = JWT.refresh(token, {
-      expiresIn: 60 * 5
+      // @ts-ignore
+      expiresIn: parseInt( process.env.JWT_EXP, 0 )
     });
 
     res.json({ success: true, token: "Bearer " + newToken });

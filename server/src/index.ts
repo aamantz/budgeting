@@ -2,12 +2,16 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as mongoose from "mongoose";
+import * as dotenv from 'dotenv';
 import AuthenticationMiddleware from "./Middleware/Authentication";
 import databaseConfig from "./Config/Database";
 
 // Import Controllers
 import TestController from "./Controllers/Test";
 import Authentication from "./Controllers/Authentication";
+
+// Setup ENV from .env
+dotenv.config();
 
 // Mongoose
 mongoose.connect(databaseConfig.database);
@@ -39,3 +43,4 @@ app.use("/api", router);
 
 app.listen(port);
 console.log("Magic happens on port " + port);
+console.log( process.env )

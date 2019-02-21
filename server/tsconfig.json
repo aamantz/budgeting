@@ -20,7 +20,7 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "typeRoots": ["node_modules/@types"],
-    "types": ["node", "express", "passport", "mongoose", "morgan"]
+    "types": ["node", "express", "mongoose"]
   },
   "exclude": ["node_modules", "dist"]
 }

@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import User from "../Models/User";
-import config from "../Config/Database";
-import * as jwt from "jsonwebtoken";
+import JWT from "../Utils/JWT";
 
 class Authentication {
   /**
@@ -44,12 +43,13 @@ class Authentication {
         } else {
           // check if password matches
           user.comparePassword(req.body.password, user, (err, isMatch) => {
-            console.log(err);
             if (isMatch && !err) {
               // if user is found and password is right create a token
-              const token = jwt.sign(user.toJSON(), config.secret);
+              const token = JWT.sign(user.toJSON(), {
+                expiresIn: 60 * 1
+              });
               // return the information including token as JSON
-              res.json({ success: true, token: "JWT " + token });
+              res.json({ success: true, token: "Bearer " + token });
             } else {
               res.status(401).send({
                 success: false,
@@ -60,6 +60,39 @@ class Authentication {
         }
       }
     );
+  }
+
+  /**
+   * Refresh Token
+   */
+  public RefreshToken(req: Request, res: Response) {
+    let token: string;
+
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.split(" ")[0] !== "Bearer"
+    ) {
+      return res
+        .status(400)
+        .send("Not Authorized")
+        .end();
+    }
+
+    if (!("authorization" in req.headers)) {
+      return res
+        .status(400)
+        .send("Not Authorized")
+        .end();
+    }
+
+    // @ts-ignore
+    token = req.headers.authorization.split(" ")[1];
+
+    const newToken = JWT.refresh(token, {
+      expiresIn: 60 * 5
+    });
+
+    res.json({ success: true, token: "Bearer " + newToken });
   }
 }
 

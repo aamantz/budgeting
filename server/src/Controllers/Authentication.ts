@@ -67,7 +67,7 @@ class Authentication {
 								// return the information including token as JSON
 								res.json({
 									success: true,
-									token: "Bearer " + token
+									token
 								});
 							} else {
 								res.status(401).send({

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ISignUpFields } from '../common/Auth.d';
+import { ISignUpFields, IUserData } from "../common/Auth.d";
 
 interface ILoginParameters {
 	username: string;
@@ -8,10 +8,21 @@ interface ILoginParameters {
 
 interface IStateProps {
 	jwt: string;
+	user: IUserData;
 }
 
 const state: IStateProps = {
-	jwt: ""
+	jwt: "",
+	user: {
+		username: '',
+		email_address: '',
+		first_name: '',
+		last_name: '',
+		_id: '',
+		iat: 0,
+		exp: 0,
+		jti: ''
+	}
 };
 
 const getter = {};
@@ -19,41 +30,49 @@ const getter = {};
 const mutations = {
 	setJwt(s: IStateProps, jwt: string) {
 		s.jwt = jwt;
+	},
+	setUser( s: IStateProps, user: IUserData ) {
+		s.user = user;
 	}
 };
 
 const actions = {
-	doLogin(context: any, { username, password }: ILoginParameters) {
+	doLogin({ commit, dispatch }: any, { username, password }: ILoginParameters) {
 		return new Promise(async (resolve, reject) => {
 			let login;
 			try {
-				login = await axios.post(
-					"/api/signin",
-					{
-						username,
-						password
-					}
-				);
+				login = await axios.post("/api/signin", {
+					username,
+					password
+				});
 
-				context.commit("setJwt", login.data.token);
+				commit("setJwt", login.data.token);
+				dispatch( 'parseToken' );
 				resolve();
 			} catch (e) {
 				reject(e.response.data.msg);
 			}
 		});
 	},
-	doSignUp( context: any, signupFields: ISignUpFields ) {
-		return new Promise( async ( resolve, reject ) => {
+	doSignUp(context: any, signupFields: ISignUpFields) {
+		return new Promise(async (resolve, reject) => {
 			let signup;
 
 			try {
-				signup = await axios.post( '/api/signup', signupFields);
+				signup = await axios.post("/api/signup", signupFields);
 
 				resolve();
-			} catch( e ) {
-				reject( e.response.data.msg );
+			} catch (e) {
+				reject(e.response.data.msg);
 			}
-		} );
+		});
+	},
+	// tslint:disable-next-line: no-shadowed-variable
+	parseToken({ commit, state }: any) {
+		const base64Url = state.jwt.split(".")[1];
+		const base64 = base64Url.replace("-", "+").replace("_", "/");
+		const parsedToken = JSON.parse(window.atob(base64));
+		commit( 'setUser', parsedToken );
 	}
 };
 

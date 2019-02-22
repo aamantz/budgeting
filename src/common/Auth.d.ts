@@ -5,3 +5,11 @@ export interface ISignUpFields {
 	first_name: string;
 	last_name: string;
 }
+
+export interface IUserData extends ISignUpFields {
+	password?: never;
+	_id: string;
+	iat: number;
+	exp: number;
+	jti: string;
+}

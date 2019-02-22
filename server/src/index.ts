@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: "http://localhost",
+    origin: "*",
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
   })
 );
@@ -43,4 +43,3 @@ app.use("/api", router);
 
 app.listen(port);
 console.log("Magic happens on port " + port);
-console.log( process.env )

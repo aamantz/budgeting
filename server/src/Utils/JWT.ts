@@ -26,7 +26,8 @@ class JWT {
 
 	public sign(payload, signOptions) {
 		const jwtSignOptions = Object.assign({}, signOptions, this.options);
-		return jwt.sign(payload, this.secretOrPublicKey, jwtSignOptions);
+		const claim = this.cleanClaim( payload );
+		return jwt.sign(claim, this.secretOrPublicKey, jwtSignOptions);
 	}
 
 	public async verify(token): Promise<ITokenClaims> {
@@ -62,6 +63,13 @@ class JWT {
 
 		// The first signing converted all needed options into claims, they are already in the payload
 		return this.sign(payload, refreshOptions);
+	}
+
+	public cleanClaim( claim ) {
+		delete claim.password;
+		delete claim.__v;
+
+		return claim;
 	}
 }
 

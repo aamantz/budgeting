@@ -1,4 +1,4 @@
 export default {
-    'database': 'mongodb://localhost/node-auth',
+    'database': 'mongodb://localhost/budgets',
     'useNewUrlParser': true
 };

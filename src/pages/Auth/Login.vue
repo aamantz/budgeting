@@ -2,13 +2,13 @@
 	<div class="container">
 		<b-alert variant="danger" :show="error != '' ? true : false">{{ error }}</b-alert>
 		<b-form @submit.prevent="doLogin()">
-			<b-form-group id="emailAddress" label="Username:" label-for="emailAddress">
+			<b-form-group id="emailAddress" label="Email Address:" label-for="emailAddress">
 				<b-form-input
 					id="emailAddress"
 					type="text"
-					v-model="form.username"
+					v-model="form.email_address"
 					required
-					placeholder="Enter username"
+					placeholder="Enter email address"
 				/>
 			</b-form-group>
 
@@ -32,7 +32,7 @@ import { Component, Vue } from "vue-property-decorator";
 import { Action } from "vuex-class";
 
 interface ILoginFields {
-	username: string;
+	email_address: string;
 	password: string;
 }
 
@@ -49,7 +49,7 @@ export default class Login extends Vue {
 
 		this.error = "";
 		this.form = {
-			username: "",
+			email_address: "",
 			password: ""
 		};
 	}
@@ -59,6 +59,11 @@ export default class Login extends Vue {
 
 		try {
 			const tryLogin = await this.login(this.form);
+			window.isLoggedIn = true;
+
+			this.$router.push({
+				name: "home"
+			});
 		} catch (e) {
 			this.error = e;
 		}

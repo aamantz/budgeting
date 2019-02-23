@@ -2,7 +2,7 @@ import axios from "axios";
 import { ISignUpFields, IUserData } from "../common/Auth.d";
 
 interface ILoginParameters {
-	username: string;
+	email_address: string;
 	password: string;
 }
 
@@ -14,7 +14,6 @@ interface IStateProps {
 const state: IStateProps = {
 	jwt: "",
 	user: {
-		username: '',
 		email_address: '',
 		first_name: '',
 		last_name: '',
@@ -37,12 +36,12 @@ const mutations = {
 };
 
 const actions = {
-	doLogin({ commit, dispatch }: any, { username, password }: ILoginParameters) {
+	doLogin({ commit, dispatch }: any, { email_address, password }: ILoginParameters) {
 		return new Promise(async (resolve, reject) => {
 			let login;
 			try {
 				login = await axios.post("/api/signin", {
-					username,
+					email_address,
 					password
 				});
 

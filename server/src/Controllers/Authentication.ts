@@ -7,18 +7,17 @@ class Authentication {
 	 * Signup for user account
 	 */
 	public SignUp(req: Request, res: Response) {
-		if (!req.body.username || !req.body.password) {
+		if (!req.body.email_address || !req.body.password) {
 			res.status(401).send({
 				success: false,
-				msg: "Please pass username and password."
+				msg: "Please pass email address and password."
 			});
 		} else {
 			const newUser = new User({
-				username: req.body.username,
-        password: req.body.password,
-        email_address: req.body.email_address,
-        first_name: req.body.first_name,
-        last_name: req.body.last_name
+				email_address: req.body.email_address,
+				password: req.body.password,
+				first_name: req.body.first_name,
+				last_name: req.body.last_name
 			});
 			// save the user
 			newUser.save((err: any) => {
@@ -42,7 +41,7 @@ class Authentication {
 	public SignIn(req: Request, res: Response) {
 		User.findOne(
 			{
-				username: req.body.username
+				email_address: req.body.email_address
 			},
 			(err, user: any) => {
 				if (err) throw err;

@@ -2,13 +2,13 @@
 	<div class="container">
 		<b-alert variant="danger" :show="error != '' ? true : false">{{ error }}</b-alert>
 		<b-form @submit.prevent="doSignUp()">
-			<b-form-group id="username" label="Username:" label-for="username">
+			<b-form-group id="email_address" label="Email Address:" label-for="email_address">
 				<b-form-input
-					id="username"
-					type="text"
-					v-model="form.username"
+					id="email_address"
+					type="email"
+					v-model="form.email_address"
 					required
-					placeholder="Enter username"
+					placeholder="Enter email address"
 				/>
 			</b-form-group>
 
@@ -22,16 +22,6 @@
 				/>
 			</b-form-group>
 
-			<b-form-group id="email_address" label="Email Address:" label-for="email_address">
-				<b-form-input
-					id="email_address"
-					type="email"
-					v-model="form.email_address"
-					required
-					placeholder="Enter email address"
-				/>
-			</b-form-group>
-			
 			<b-form-group id="first_name" label="First Name:" label-for="first_name">
 				<b-form-input
 					id="first_name"
@@ -58,38 +48,36 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Action } from 'vuex-class';
-import { ISignUpFields } from '../../common/Auth.d';
+import { Component, Vue } from "vue-property-decorator";
+import { Action } from "vuex-class";
+import { ISignUpFields } from "../../common/Auth.d";
 
-
-@Component( {
-	name: 'SignUp'
-} )
+@Component({
+	name: "SignUp"
+})
 export default class SignUp extends Vue {
-	@Action( 'doSignUp', { namespace: 'Auth' } ) private signup: any;
+	@Action("doSignUp", { namespace: "Auth" }) private signup: any;
 	private form: ISignUpFields;
 	private error: string;
 
 	constructor() {
 		super();
 
-		this.error = '';
+		this.error = "";
 		this.form = {
-			username: '',
-			password: '',
-			email_address: '',
-			first_name: '',
-			last_name: ''
+			password: "",
+			email_address: "",
+			first_name: "",
+			last_name: ""
 		};
 	}
 
 	private async doSignUp() {
-		this.error = '';
+		this.error = "";
 
 		try {
 			const trySignUp = await this.signup(this.form);
-		} catch( e ) {
+		} catch (e) {
 			this.error = e;
 		}
 	}

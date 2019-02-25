@@ -58,15 +58,17 @@ class Authentication {
 						user,
 						(err, isMatch) => {
 							if (isMatch && !err) {
+								// @ts-ignore
+								const expires = parseInt(process.env.JWT_EXP, 0);
+								
 								// if user is found and password is right create a token
 								const token = JWT.sign(user.toJSON(), {
-									// @ts-ignore
-									expiresIn: parseInt(process.env.JWT_EXP, 0)
+									expiresIn: expires,
 								});
 
 								// return the information including token as JSON
 								res.cookie("accessToken", token, {
-									maxAge: 60 * 60 * 24 * 7,
+									maxAge: expires,
 									httpOnly: true
 								}).json({
 									success: true,

@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import User from "../Models/User";
 import JWT from "../Utils/JWT";
+import * as dotenv from 'dotenv';
+
+// Setup ENV from .env
+dotenv.config();
 
 class Authentication {
 	/**
@@ -60,6 +64,7 @@ class Authentication {
 							if (isMatch && !err) {
 								// @ts-ignore
 								const expires = parseInt(process.env.JWT_EXP, 0);
+								// console.log( expires );
 								
 								// if user is found and password is right create a token
 								const token = JWT.sign(user.toJSON(), {
@@ -68,7 +73,7 @@ class Authentication {
 
 								// return the information including token as JSON
 								res.cookie("accessToken", token, {
-									maxAge: expires,
+									maxAge: expires * 1000,
 									httpOnly: true
 								}).json({
 									success: true,

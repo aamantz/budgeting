@@ -16,7 +16,11 @@
 			Header
 		}
 	})
-	export default class App extends Vue {}
+	export default class App extends Vue {
+		constructor() {
+			super();
+		}
+	}
 </script>
 
 

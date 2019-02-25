@@ -63,10 +63,14 @@ class Authentication {
 									// @ts-ignore
 									expiresIn: parseInt(process.env.JWT_EXP, 0)
 								});
+
 								// return the information including token as JSON
-								res.json({
+								res.cookie("accessToken", token, {
+									maxAge: 60 * 60 * 24 * 7,
+									httpOnly: true
+								}).json({
 									success: true,
-									token
+									user: user.toJSON()
 								});
 							} else {
 								res.status(401).send({
@@ -88,25 +92,14 @@ class Authentication {
 	public RefreshToken(req: Request, res: Response) {
 		let token: string;
 
-		if (
-			req.headers.authorization &&
-			req.headers.authorization.split(" ")[0] !== "Bearer"
-		) {
+		if (!req.cookies.accessToken) {
 			return res
 				.status(400)
 				.send("Not Authorized")
 				.end();
 		}
 
-		if (!("authorization" in req.headers)) {
-			return res
-				.status(400)
-				.send("Not Authorized")
-				.end();
-		}
-
-		// @ts-ignore
-		token = req.headers.authorization.split(" ")[1];
+		token = req.cookies.accessToken;
 
 		const newToken = JWT.refresh(token, {
 			// @ts-ignore
@@ -114,6 +107,37 @@ class Authentication {
 		});
 
 		res.json({ success: true, token: "Bearer " + newToken });
+	}
+
+	/**
+	 * Refresh Token
+	 */
+	public async VerifyToken(req: Request, res: Response) {
+		let token: string;
+		if (!req.cookies.accessToken) {
+			return res
+				.status(400)
+				.send("Not Authorized")
+				.end();
+		}
+
+		token = req.cookies.accessToken;
+
+		try {
+			const getClaimData = await JWT.verify(token);
+
+			const findUser = await User.findOne({
+				id: getClaimData.userId
+			}).exec();
+
+			if (findUser) {
+				res.json({ success: true, user: findUser.toJSON() });
+			}
+		} catch (error) {
+			res.json({ success: false });
+		}
+
+		res.json({ success: false });
 	}
 }
 

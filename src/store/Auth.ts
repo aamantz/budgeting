@@ -14,13 +14,13 @@ interface IStateProps {
 const state: IStateProps = {
 	jwt: "",
 	user: {
-		email_address: '',
-		first_name: '',
-		last_name: '',
-		_id: '',
+		email_address: "",
+		first_name: "",
+		last_name: "",
+		_id: "",
 		iat: 0,
 		exp: 0,
-		jti: ''
+		jti: ""
 	}
 };
 
@@ -30,13 +30,16 @@ const mutations = {
 	setJwt(s: IStateProps, jwt: string) {
 		s.jwt = jwt;
 	},
-	setUser( s: IStateProps, user: IUserData ) {
+	setUser(s: IStateProps, user: IUserData) {
 		s.user = user;
 	}
 };
 
 const actions = {
-	doLogin({ commit, dispatch }: any, { email_address, password }: ILoginParameters) {
+	doLogin(
+		{ commit, dispatch }: any,
+		{ email_address, password }: ILoginParameters
+	) {
 		return new Promise(async (resolve, reject) => {
 			let login;
 			try {
@@ -45,8 +48,8 @@ const actions = {
 					password
 				});
 
-				commit("setJwt", login.data.token);
-				dispatch( 'parseToken' );
+				// localStorage.setItem( 'accessToken', login.data.token );
+				commit("setUser", login.data.user);
 				resolve();
 			} catch (e) {
 				reject(e.response.data.msg);
@@ -66,12 +69,25 @@ const actions = {
 			}
 		});
 	},
+	checkToken({ commit, dispatch }: any) {
+		return new Promise(async (resolve, reject) => {
+			let verify;
+			try {
+				verify = await axios.get("/api/verifytoken");
+				window.isLoggedIn = true;
+				commit("setUser", verify.data.user);
+				resolve();
+			} catch (e) {
+				reject(e.response.data.msg);
+			}
+		});
+	},
 	// tslint:disable-next-line: no-shadowed-variable
 	parseToken({ commit, state }: any) {
 		const base64Url = state.jwt.split(".")[1];
 		const base64 = base64Url.replace("-", "+").replace("_", "/");
 		const parsedToken = JSON.parse(window.atob(base64));
-		commit( 'setUser', parsedToken );
+		commit("setUser", parsedToken);
 	}
 };
 

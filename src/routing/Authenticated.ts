@@ -1,4 +1,5 @@
 import router from "./index";
+import store from '../store';
 import { Route, NavigationGuard } from "vue-router/types";
 
 router.beforeEach(async (to: Route, from: Route, next: () => void) => {

@@ -1,28 +1,36 @@
 <template>
 	<div class="container">
 		<b-alert variant="danger" :show="error != '' ? true : false">{{ error }}</b-alert>
-		<b-form @submit.prevent="doLogin()">
-			<b-form-group id="emailAddress" label="Email Address:" label-for="emailAddress">
-				<b-form-input
-					id="emailAddress"
-					type="text"
-					v-model="form.email_address"
-					required
-					placeholder="Enter email address"
-				/>
-			</b-form-group>
+		<b-form @submit.prevent="doLogin()" class="w-50 m-auto">
+			<b-card no-body>
+				<h4 slot="header">Login</h4>
+				<b-card-body>
+					<b-form-group id="emailAddress" label="Email Address:" label-for="emailAddress">
+						<b-form-input
+							id="emailAddress"
+							type="text"
+							v-model="form.email_address"
+							required
+							placeholder="Enter email address"
+						/>
+					</b-form-group>
 
-			<b-form-group id="password" label="Password:" label-for="password">
-				<b-form-input
-					id="password"
-					type="password"
-					v-model="form.password"
-					required
-					placeholder="Enter password"
-				/>
-			</b-form-group>
+					<b-form-group id="password" label="Password:" label-for="password">
+						<b-form-input
+							id="password"
+							type="password"
+							v-model="form.password"
+							required
+							placeholder="Enter password"
+						/>
+					</b-form-group>
+				</b-card-body>
 
-			<b-button type="submit" variant="primary">Submit</b-button>
+				<b-card-footer>
+					<b-button type="submit" variant="primary" class="float-right">Login</b-button>
+					<b-button type="button" :to="{ name: 'signup' }" variant="secondary">Sign Up</b-button>
+				</b-card-footer>
+			</b-card>
 		</b-form>
 	</div>
 </template>

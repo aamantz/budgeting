@@ -3,6 +3,8 @@ import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import * as mongoose from "mongoose";
 import * as dotenv from 'dotenv';
+import * as csurf from 'csurf';
+import * as cookieParser from 'cookie-parser';
 import AuthenticationMiddleware from "./Middleware/Authentication";
 import databaseConfig from "./Config/Database";
 
@@ -18,28 +20,54 @@ mongoose.connect(databaseConfig.database);
 
 const app = express(); // define our app using express
 
+app.use(
+  cors({
+    origin: "http://localhost:8080",
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    credentials: true
+  })
+);
+
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: "*",
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-  })
-);
+const csrfMiddleware = csurf({
+  cookie: true
+});
+
+app.use( csrfMiddleware );
+
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+  // @ts-ignore
+  res.cookie('XSRF-TOKEN', req.csrfToken());
+  // @ts-ignore
+  res.locals._csrf = req.csrfToken();
+  next();
+});
+
 
 const port = process.env.PORT || 8081; // set our port
 
 const router = express.Router();
 
-router.get("/", AuthenticationMiddleware, TestController.getData);
+router.options( '/', cors() );
+router.post("/", AuthenticationMiddleware, TestController.getData);
+
+router.options( '/signup', cors() );
 router.post("/signup", Authentication.SignUp);
+
+router.options( '/signin', cors() );
 router.post("/signin", Authentication.SignIn);
-router.post("/refreshtoken", Authentication.RefreshToken);
+// router.post("/refreshtoken", csrfMiddleware, Authentication.RefreshToken);
+
+router.options( '/verifytoken', cors() );
+router.get("/verifytoken", Authentication.VerifyToken);
 
 app.use("/api", router);
 
 app.listen(port);
+// @ts-ignore
 console.log("Magic happens on port " + port);

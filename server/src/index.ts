@@ -11,6 +11,7 @@ import databaseConfig from "./Config/Database";
 // Import Controllers
 import TestController from "./Controllers/Test";
 import Authentication from "./Controllers/Authentication";
+import BudgetController from './Controllers/Budgets';
 
 // Setup ENV from .env
 dotenv.config();
@@ -65,6 +66,10 @@ router.post("/signin", Authentication.SignIn);
 
 router.options( '/verifytoken', cors() );
 router.get("/verifytoken", Authentication.VerifyToken);
+
+router.options( '/budgets', cors() );
+router.get("/budgets", AuthenticationMiddleware, BudgetController.getBudgets);
+router.post("/budgets", AuthenticationMiddleware, BudgetController.addBudget);
 
 app.use("/api", router);
 

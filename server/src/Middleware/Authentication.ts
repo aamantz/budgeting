@@ -21,6 +21,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
 		const findUser = await User.findOne({ id: getClaimData.userId }).exec();
 
+		// @ts-ignore
+		req.User = findUser;
+
 		if (findUser) {
 			return next();
 		}

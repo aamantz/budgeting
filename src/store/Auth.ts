@@ -24,7 +24,11 @@ const state: IStateProps = {
 	}
 };
 
-const getter = {};
+const getters = {
+	getUser( s: IStateProps ) {
+		return s.user;
+	}
+};
 
 const mutations = {
 	setJwt(s: IStateProps, jwt: string) {
@@ -91,4 +95,4 @@ const actions = {
 	}
 };
 
-export { state, getter, mutations, actions };
+export { state, getters, mutations, actions };

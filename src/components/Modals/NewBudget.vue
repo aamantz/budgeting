@@ -37,12 +37,12 @@
 		/**
 		 * Add the Budget to our state
 		 */
-		private addBudget() {
+		private async addBudget() {
 			if (this.name.trim() === "") {
 				return;
 			}
 
-			this.$store.commit("Budgets/addBudget", { name: this.name });
+			await this.$store.commit("Budgets/addBudget", { name: this.name });
 
 			// @ts-ignore
 			this.$refs.AddNewBudget.hide();

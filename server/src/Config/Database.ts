@@ -1,4 +1,6 @@
 export default {
-    'database': 'mongodb://localhost/budgets',
-    'useNewUrlParser': true
+	database: "mongodb://localhost/budgets",
+	options: {
+		useNewUrlParser: true
+	}
 };

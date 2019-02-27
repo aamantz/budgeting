@@ -17,7 +17,7 @@ import BudgetController from './Controllers/Budgets';
 dotenv.config();
 
 // Mongoose
-mongoose.connect(databaseConfig.database);
+mongoose.connect(databaseConfig.database, databaseConfig.options);
 
 const app = express(); // define our app using express
 
@@ -65,7 +65,7 @@ router.post("/signin", Authentication.SignIn);
 // router.post("/refreshtoken", csrfMiddleware, Authentication.RefreshToken);
 
 router.options( '/verifytoken', cors() );
-router.get("/verifytoken", Authentication.VerifyToken);
+router.get("/verifytoken", AuthenticationMiddleware, Authentication.VerifyToken);
 
 router.options( '/budgets', cors() );
 router.get("/budgets", AuthenticationMiddleware, BudgetController.getBudgets);

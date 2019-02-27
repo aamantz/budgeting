@@ -137,64 +137,14 @@ class Authentication {
 	/**
 	 * Refresh Token
 	 */
-	public async VerifyToken(req: Request, res: Response) {
-		let accessToken: any;
-		let refreshToken: any;
-		let getClaimData: any;
-
-		accessToken = req.headers.authorization;
-
-		if (accessToken === undefined || !req.cookies.refreshToken) {
-			return res
-				.status(400)
-				.send("Not Authorized")
-				.end();
-		}
-
-		accessToken = accessToken.split(" ")[1];
-		refreshToken = req.cookies.refreshToken;
-
+	public VerifyToken(req: Request, res: Response) {
 		try {
-			getClaimData = await JWT.verify(accessToken);
-		} catch (error) {
-			// If we fail the verification let's check the refresh token and refresh the access token
-			getClaimData = await JWT.verify(refreshToken);
-
-			const accessExpires = parseInt(
-				// @ts-ignore
-				process.env.JWT_ACCESS_EXP,
-				0
-			);
-
-			const newAccessToken = JWT.sign(
-				{ _id: getClaimData.userId },
-				{
-					expiresIn: accessExpires
-				}
-			);
-
-			console.log("new token", newAccessToken);
-
-			res.header("Access-Control-Expose-Headers", "authorization");
-			res.header("authorization", "Bearer " + newAccessToken);
-		}
-
-		try {
-			const findUser = await User.findOne({
-				id: getClaimData.userId
-			}).exec();
-
-			// @ts-ignore
-			req.User = findUser;
-
-			if (findUser) {
-				res.json({ success: true, user: findUser.toJSON() });
+			if (req.User) {
+				res.json({ success: true, user: req.User });
 			}
 		} catch (e) {
-			// We'll error outside this catch block
+			res.json({ success: false });
 		}
-
-		res.json({ success: false });
 	}
 }
 

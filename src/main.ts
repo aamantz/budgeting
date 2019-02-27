@@ -18,16 +18,17 @@ axios.interceptors.request.use(config => {
 	};
 
 	if (localStorage.getItem("accessToken")) {
-		config.headers.authorization = 'Bearer ' + localStorage.getItem("accessToken");
+		config.headers.authorization =
+			"Bearer " + localStorage.getItem("accessToken");
 	}
 
 	return config;
 });
 
 axios.interceptors.response.use(response => {
-	if( response.headers.authorization !== undefined ) {
-		const accessToken = response.headers.authorization.split( " " )[1];
-		localStorage.setItem( 'accessToken', accessToken );
+	if (response.headers.authorization !== undefined) {
+		const accessToken = response.headers.authorization.split(" ")[1];
+		localStorage.setItem("accessToken", accessToken);
 	}
 
 	return response;

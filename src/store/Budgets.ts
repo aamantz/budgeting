@@ -1,13 +1,8 @@
 import axios from "axios";
+import { Budget } from '@/common/Budget';
 
 interface StateObject {
 	budgets: Budget[];
-}
-
-interface Budget {
-	_id: string;
-	name: string;
-	items?: any;
 }
 
 const state: StateObject = {
@@ -28,7 +23,7 @@ const getters = {
 
 const mutations = {
 	addBudget: (s: StateObject, payload: { name: string }) => {
-		return new Promise( async (resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			const { name } = payload;
 
 			try {
@@ -37,30 +32,28 @@ const mutations = {
 				});
 
 				s.budgets = addBudget.data.budgets;
-
 			} catch (e) {
-				reject( e.response.data );
+				reject(e.response.data);
 			}
 		});
 	},
-	setBudgets( s: StateObject, payload: any ) {
+	setBudgets(s: StateObject, payload: any) {
 		s.budgets = payload;
 	}
 };
 
 const actions = {
-	async getBudgets( { commit }: any ) {
-		return new Promise( async ( resolve, reject ) => {
+	async getBudgets({ commit }: any) {
+		return new Promise(async (resolve, reject) => {
 			try {
-				const allBudgets = await axios.get( '/api/budgets' );
+				const allBudgets = await axios.get("/api/budgets");
 
-				commit( 'setBudgets', allBudgets.data );
+				commit("setBudgets", allBudgets.data);
 				resolve();
-
-			} catch( e ) {
-				reject( e.response.data );
+			} catch (e) {
+				reject(e.response.data);
 			}
-		} );
+		});
 	}
 };
 

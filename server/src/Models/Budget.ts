@@ -10,6 +10,10 @@ const BudgetSchema = new Schema({
     name: {
         type: String,
         required: true
+    },
+    items: {
+        type: Object,
+        required: false
     }
 });
 

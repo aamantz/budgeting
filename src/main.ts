@@ -14,21 +14,31 @@ axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(config => {
 	config.headers = {
-		'csrf-token': getCookie( 'XSRF-TOKEN' )
+		"csrf-token": getCookie("XSRF-TOKEN")
 	};
+
+	if (localStorage.getItem("accessToken")) {
+		config.headers.authorization = 'Bearer ' + localStorage.getItem("accessToken");
+	}
+
 	return config;
 });
 
-axios.interceptors.response.use( response => {
+axios.interceptors.response.use(response => {
+	if( response.headers.authorization !== undefined ) {
+		const accessToken = response.headers.authorization.split( " " )[1];
+		localStorage.setItem( 'accessToken', accessToken );
+	}
+
 	return response;
-} );
+});
 
 // Window Vars
 window.isLoggedIn = false;
 
 (async () => {
 	try {
-		await store.dispatch( 'Auth/checkToken' );
+		await store.dispatch("Auth/checkToken");
 	} catch {
 		// Empty Block
 	} finally {

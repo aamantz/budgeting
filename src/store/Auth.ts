@@ -25,9 +25,10 @@ const state: IStateProps = {
 };
 
 const getters = {
-	getUser( s: IStateProps ) {
+	getUser(s: IStateProps) {
 		return s.user;
-	}
+	},
+	isAuthenticated: (s: IStateProps): boolean => s.user._id !== ""
 };
 
 const mutations = {
@@ -54,6 +55,8 @@ const actions = {
 
 				// localStorage.setItem( 'accessToken', login.data.token );
 				commit("setUser", login.data.user);
+				localStorage.setItem("accessToken", login.data.accessToken);
+				window.isLoggedIn = true;
 				resolve();
 			} catch (e) {
 				reject(e.response.data.msg);
@@ -73,14 +76,18 @@ const actions = {
 			}
 		});
 	},
-	checkToken({ commit, dispatch }: any) {
+	checkToken({ state, commit, dispatch }: any) {
+		if (state.user._id !== "") {
+			return Promise.resolve(true);
+		}
+
 		return new Promise(async (resolve, reject) => {
 			let verify;
 			try {
 				verify = await axios.get("/api/verifytoken");
 				window.isLoggedIn = true;
 				commit("setUser", verify.data.user);
-				resolve();
+				resolve(true);
 			} catch (e) {
 				reject(e.response.data.msg);
 			}

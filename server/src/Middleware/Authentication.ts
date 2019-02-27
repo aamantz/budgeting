@@ -5,20 +5,46 @@ import JWT from "../Utils/JWT";
 import User from "../Models/User";
 
 export default async (req: Request, res: Response, next: NextFunction) => {
-	let token: string;
+	let accessToken: any;
+	let refreshToken: any;
+	let getClaimData: any;
 
-	if (!req.cookies.accessToken) {
+	accessToken = req.headers.authorization;
+
+	if (accessToken === undefined || !req.cookies.refreshToken) {
 		return res
 			.status(400)
 			.send("Not Authorized")
 			.end();
 	}
 
-	token = req.cookies.accessToken;
+	accessToken = accessToken.split(" ")[1];
+	refreshToken = req.cookies.refreshToken;
 
 	try {
-		const getClaimData = await JWT.verify(token);
+		getClaimData = await JWT.verify(accessToken);
+	} catch (error) {
+		// If we fail the verification let's check the refresh token and refresh the access token
+		getClaimData = await JWT.verify(refreshToken);
 
+		const accessExpires = parseInt(
+			// @ts-ignore
+			process.env.JWT_ACCESS_EXP,
+			0
+		);
+
+		const newAccessToken = JWT.sign(
+			{ _id: getClaimData.userId },
+			{
+				expiresIn: accessExpires
+			}
+		);
+
+		res.header("Access-Control-Expose-Headers", "authorization");
+		res.header("authorization", "Bearer " + newAccessToken);
+	}
+
+	try {
 		const findUser = await User.findOne({ id: getClaimData.userId }).exec();
 
 		// @ts-ignore
@@ -27,11 +53,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 		if (findUser) {
 			return next();
 		}
-	} catch (error) {
-		return res
-			.status(400)
-			.send("Not Authorized")
-			.end();
+	} catch (e) {
+		// We'll error outside this catch block
 	}
 
 	return res

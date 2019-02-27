@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User from "../Models/User";
 import JWT from "../Utils/JWT";
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 
 // Setup ENV from .env
 dotenv.config();
@@ -62,21 +62,39 @@ class Authentication {
 						user,
 						(err, isMatch) => {
 							if (isMatch && !err) {
-								// @ts-ignore
-								const expires = parseInt(process.env.JWT_EXP, 0);
-								// console.log( expires );
-								
-								// if user is found and password is right create a token
-								const token = JWT.sign(user.toJSON(), {
-									expiresIn: expires,
-								});
+								const refreshExpires = parseInt(
+									// @ts-ignore
+									process.env.JWT_REFRESH_EXP,
+									0
+								);
+
+								const accessExpires = parseInt(
+									// @ts-ignore
+									process.env.JWT_ACCESS_EXP,
+									0
+								);
+
+								const refreshToken = JWT.sign(
+									{ _id: user._id },
+									{
+										expiresIn: refreshExpires
+									}
+								);
+
+								const accessToken = JWT.sign(
+									{ _id: user._id },
+									{
+										expiresIn: accessExpires
+									}
+								);
 
 								// return the information including token as JSON
-								res.cookie("accessToken", token, {
-									maxAge: expires * 1000,
+								res.cookie("refreshToken", refreshToken, {
+									maxAge: refreshExpires * 1000,
 									httpOnly: true
 								}).json({
 									success: true,
+									accessToken,
 									user: user.toJSON()
 								});
 							} else {
@@ -110,7 +128,7 @@ class Authentication {
 
 		const newToken = JWT.refresh(token, {
 			// @ts-ignore
-			expiresIn: parseInt(process.env.JWT_EXP, 0)
+			expiresIn: parseInt(process.env.JWT_ACCESS_EXP, 0)
 		});
 
 		res.json({ success: true, token: "Bearer " + newToken });
@@ -120,28 +138,60 @@ class Authentication {
 	 * Refresh Token
 	 */
 	public async VerifyToken(req: Request, res: Response) {
-		let token: string;
-		if (!req.cookies.accessToken) {
+		let accessToken: any;
+		let refreshToken: any;
+		let getClaimData: any;
+
+		accessToken = req.headers.authorization;
+
+		if (accessToken === undefined || !req.cookies.refreshToken) {
 			return res
 				.status(400)
 				.send("Not Authorized")
 				.end();
 		}
 
-		token = req.cookies.accessToken;
+		accessToken = accessToken.split(" ")[1];
+		refreshToken = req.cookies.refreshToken;
 
 		try {
-			const getClaimData = await JWT.verify(token);
+			getClaimData = await JWT.verify(accessToken);
+		} catch (error) {
+			// If we fail the verification let's check the refresh token and refresh the access token
+			getClaimData = await JWT.verify(refreshToken);
 
+			const accessExpires = parseInt(
+				// @ts-ignore
+				process.env.JWT_ACCESS_EXP,
+				0
+			);
+
+			const newAccessToken = JWT.sign(
+				{ _id: getClaimData.userId },
+				{
+					expiresIn: accessExpires
+				}
+			);
+
+			console.log("new token", newAccessToken);
+
+			res.header("Access-Control-Expose-Headers", "authorization");
+			res.header("authorization", "Bearer " + newAccessToken);
+		}
+
+		try {
 			const findUser = await User.findOne({
 				id: getClaimData.userId
 			}).exec();
 
+			// @ts-ignore
+			req.User = findUser;
+
 			if (findUser) {
 				res.json({ success: true, user: findUser.toJSON() });
 			}
-		} catch (error) {
-			res.json({ success: false });
+		} catch (e) {
+			// We'll error outside this catch block
 		}
 
 		res.json({ success: false });

@@ -7,6 +7,7 @@ interface StateObject {
 interface Budget {
 	_id: string;
 	name: string;
+	items?: any;
 }
 
 const state: StateObject = {

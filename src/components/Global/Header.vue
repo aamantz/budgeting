@@ -27,12 +27,6 @@ import { Getter } from "vuex-class";
 @Component
 export default class Header extends Vue {
 	@Getter("getUser", { namespace: "Auth" }) private User: any;
-	private isLoggedIn: boolean;
-
-	constructor() {
-		super();
-
-		this.isLoggedIn = window.isLoggedIn;
-	}
+	@Getter("isAuthenticated", { namespace: 'Auth' } ) private isLoggedIn: any;
 }
 </script>

@@ -1,16 +1,26 @@
 <template>
 	<div :class="classes">
-		<div v-for="(item, index) in budgetWeek" :key="index" class="row mb-3">
-			<div class="col-md-3">
-				<b-form-input type="text" v-model="budgetWeek[index].name" placeholder="Name"/>
+		<div class="form-row mb-2">
+			<div class="col-2 font-weight-bold">Week</div>
+			<div class="col-5 font-weight-bold">Budgeted Items</div>
+			<div class="col-2 font-weight-bold">Total Amount</div>
+			<div class="col-2 font-weight-bold">Leftover</div>
+			<div class="col-1"></div>
+		</div>
+		<div v-for="(item, index) in budgetWeek" :key="index" class="form-row mb-3">
+			<div class="col-2">
+				<b-form-input size="sm" type="text" v-model="budgetWeek[index].name" placeholder="Name"/>
 			</div>
-			<div class="col-md-6">
+			<div class="col-5">
 				
 			</div>
-			<div class="col-md-2">
-				Total
+			<div class="col-2">
+			
 			</div>
-			<div class="col-md-1">
+			<div class="col-2">
+				
+			</div>
+			<div class="col-1">
 				<a href="#" @click.prevent="deleteItem(index)">
 					<i class="fas fa-trash-alt" style="cursor: pointer;"></i>
 				</a>

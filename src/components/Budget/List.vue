@@ -1,11 +1,19 @@
 <template>
 	<div :class="classes">
-		<div v-for="(item, index) in budgetItem" :key="index" class="row mb-3">
-			<div class="col-md-4">
-				<b-form-input type="text" v-model="budgetItem[index].name" placeholder="Name"/>
+		<div class="form-row mb-2">
+			<div class="col-4 font-weight-bold">Name</div>
+			<div class="col-2 font-weight-bold">Amount</div>
+			<div class="col-3 font-weight-bold">Date</div>
+			<div class="col-2"></div>
+			<div class="col-1"></div>
+		</div>
+		<div v-for="(item, index) in budgetItem" :key="index" class="form-row mb-3">
+			<div class="col-4">
+				<b-form-input size="sm" type="text" v-model="budgetItem[index].name" placeholder="Name"/>
 			</div>
-			<div class="col-md-2">
+			<div class="col-2">
 				<b-form-input
+					size="sm"
 					type="number"
 					step="0.01"
 					:formatter="formatAmount"
@@ -14,18 +22,19 @@
 					placeholder="Amount"
 				/>
 			</div>
-			<div class="col-md-3">
-				<b-form-input type="date" v-model="budgetItem[index].date" placeholder="Date"/>
+			<div class="col-3">
+				<b-form-input size="sm" type="date" v-model="budgetItem[index].date" placeholder="Date"/>
 			</div>
-			<div class="col-md-2">
+			<div class="col-2">
 				<b-form-checkbox
+					size="sm"
 					id="checkbox1"
 					v-model="budgetItem[index].paid"
 					:value="true"
 					:unchecked-value="false"
 				>Paid?</b-form-checkbox>
 			</div>
-			<div class="col-md-1">
+			<div class="col-1">
 				<a href="#" @click.prevent="deleteItem(index)">
 					<i class="fas fa-trash-alt" style="cursor: pointer;"></i>
 				</a>

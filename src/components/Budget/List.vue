@@ -28,7 +28,7 @@
 			<div class="col-2">
 				<b-form-checkbox
 					size="sm"
-					id="checkbox1"
+					:id="`checkbox${index}`"
 					v-model="budgetItem[index].paid"
 					:value="true"
 					:unchecked-value="false"

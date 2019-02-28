@@ -71,6 +71,9 @@ router.options( '/budgets', cors() );
 router.get("/budgets", AuthenticationMiddleware, BudgetController.getBudgets);
 router.post("/budgets", AuthenticationMiddleware, BudgetController.addBudget);
 
+router.options( '/budget', cors() );
+router.post("/budget", AuthenticationMiddleware, BudgetController.saveBudget);
+
 app.use("/api", router);
 
 app.listen(port);

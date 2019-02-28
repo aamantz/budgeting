@@ -14,6 +14,10 @@ const BudgetSchema = new Schema({
     items: {
         type: Object,
         required: false
+    },
+    weeks: {
+        type: Object,
+        required: false
     }
 });
 

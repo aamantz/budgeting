@@ -44,6 +44,29 @@ class Budgets {
 			}
 		}
 	}
+
+	public async saveBudget( req: Request, res: Response, _next: NextFunction ) {
+		try {
+			const budget = req.body.budget;
+			const budgetId = budget._id;
+
+			delete budget._id;
+
+			//const update = await Budget.updateOne( { _id: budgetId }, budget ).exec();
+			const update = await Budget.findOneAndUpdate( { _id: budgetId }, { $set: budget }, { new: true } ).exec()
+
+			res.status(200).send({
+				success: true,
+				budget: update
+			});
+		} catch ( e ) {
+			console.log( e );
+			return res.status(401).send({
+				success: false,
+				msg: "Error updating budget"
+			});
+		}
+	}
 }
 
 export default new Budgets();

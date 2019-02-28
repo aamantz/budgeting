@@ -2,6 +2,7 @@ export interface Budget {
 	_id: string;
 	name: string;
 	items: IBudgetItem[];
+	weeks: IBudgetWeek[];
 }
 
 export interface IBudgetItem {
@@ -9,4 +10,9 @@ export interface IBudgetItem {
 	amount: number;
 	date: string;
 	paid: boolean;
+}
+
+export interface IBudgetWeek {
+	name: string;
+	items: number[];
 }

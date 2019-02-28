@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Budget } from '@/common/Budget';
+import { Budget } from "@/common/Budget";
 
 interface StateObject {
 	budgets: Budget[];
@@ -37,6 +37,10 @@ const mutations = {
 			}
 		});
 	},
+	setBudget( s: StateObject, payload: Budget ) {
+		const findIndex = s.budgets.findIndex( budget => budget._id === payload._id );
+		s.budgets[findIndex] = payload;
+	},
 	setBudgets(s: StateObject, payload: any) {
 		s.budgets = payload;
 	}
@@ -52,6 +56,21 @@ const actions = {
 				resolve();
 			} catch (e) {
 				reject(e.response.data);
+			}
+		});
+	},
+	async saveBudget({ commit }: any, payload: Budget) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				const saveBudget = await axios.post("/api/budget", {
+					budget: payload
+				});
+				
+				commit( 'setBudget', saveBudget.data );
+				resolve(saveBudget.data);
+			} catch (e) {
+				console.log(e);
+				reject(e);
 			}
 		});
 	}

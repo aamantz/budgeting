@@ -1,16 +1,23 @@
 <template>
-	<div>
-		<div v-for="(item, index) in budgetItem" :key="index" class="row">
-			<div class="col-">
+	<div :class="classes">
+		<div v-for="(item, index) in budgetItem" :key="index" class="row mb-3">
+			<div class="col-md-4">
 				<b-form-input type="text" v-model="budgetItem[index].name" placeholder="Name"/>
 			</div>
-			<div class="col-">
-				<b-form-input type="number" step="0.01" :formatter="formatAmount" lazy-formatter v-model="budgetItem[index].amount" placeholder="Amount"/>
+			<div class="col-md-2">
+				<b-form-input
+					type="number"
+					step="0.01"
+					:formatter="formatAmount"
+					lazy-formatter
+					v-model="budgetItem[index].amount"
+					placeholder="Amount"
+				/>
 			</div>
-			<div class="col-">
+			<div class="col-md-3">
 				<b-form-input type="date" v-model="budgetItem[index].date" placeholder="Date"/>
 			</div>
-			<div class="col-">
+			<div class="col-md-2">
 				<b-form-checkbox
 					id="checkbox1"
 					v-model="budgetItem[index].paid"
@@ -18,19 +25,25 @@
 					:unchecked-value="false"
 				>Paid?</b-form-checkbox>
 			</div>
+			<div class="col-md-1">
+				<a href="#" @click.prevent="deleteItem(index)">
+					<i class="fas fa-trash-alt" style="cursor: pointer;"></i>
+				</a>
+			</div>
 		</div>
-		<button @click="addItem()" class="btn btn-primary">Add Item</button>
+		<button type="button" @click="addItem()" class="btn btn-secondary">Add Item</button>
 	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import { Budget, IBudgetItem } from "@/common/Budget";
 
 @Component({
 	name: "Items"
 })
 export default class BudgetList extends Vue {
+	@Prop({ default: "col-sm-12 col-md-6" }) private classes: any;
 	@Prop(Object) private budget!: Budget;
 	private budgetItem: IBudgetItem[];
 
@@ -40,11 +53,20 @@ export default class BudgetList extends Vue {
 		this.budgetItem = [
 			{
 				name: "",
-				amount: 0.00,
+				amount: 0.0,
 				date: "",
 				paid: false
 			}
 		];
+	}
+
+	@Watch("budgetItem", { deep: true })
+	private watchBudgetItem(newValue: IBudgetItem[], oldValue: IBudgetItem[]) {
+		const budget = this.budget;
+
+		budget.items = this.budgetItem;
+
+		this.$emit("update:budget", budget);
 	}
 
 	private created() {
@@ -58,7 +80,7 @@ export default class BudgetList extends Vue {
 	private addItem() {
 		const item: IBudgetItem = {
 			name: "",
-			amount: 0.00,
+			amount: 0.0,
 			date: "",
 			paid: false
 		};
@@ -66,8 +88,15 @@ export default class BudgetList extends Vue {
 		this.budgetItem.push(item);
 	}
 
-	private formatAmount( value: string ) {
-		return parseFloat( value ).toFixed(2);
+	private formatAmount(value: string) {
+		return parseFloat(value).toFixed(2);
+	}
+
+	private deleteItem(index: number) {
+		// @ts-ignore
+		this.budgetItem = this.budgetItem.filter(
+			(budget: IBudgetItem, i) => index !== i
+		);
 	}
 }
 </script>
